@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tokyo 3-Day Optimized Itinerary with Interactive Map</title>
+    <title>Tokyo 3-Day Optimized Itinerary</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -12,19 +12,16 @@
             background-color: #f4f4f4;
             color: #333;
             display: flex;
-            height: 100vh; /* Full viewport height */
-            overflow: hidden; /* Prevent body scroll, handle scrolling in children */
         }
 
         #sidebar {
-            width: 300px; /* Slightly wider for better readability */
+            width: 280px;
             background-color: #333;
             color: #fff;
             padding: 20px;
-            height: 100%;
+            height: 100vh;
             overflow-y: auto;
             box-sizing: border-box;
-            flex-shrink: 0; /* Prevent sidebar from shrinking */
         }
 
         #sidebar h2 {
@@ -41,62 +38,47 @@
 
         #sidebar li {
             margin-bottom: 12px;
-            padding: 5px;
-            border-radius: 4px;
-            transition: background-color 0.2s ease-in-out;
-        }
-
-        #sidebar li:hover {
-            background-color: #555;
-            cursor: pointer;
+            display: flex;
+            align-items: center;
         }
 
         #sidebar input[type="checkbox"] {
             margin-right: 10px;
             width: 18px;
             height: 18px;
-            vertical-align: middle;
+            cursor: pointer;
         }
         
         #sidebar label {
             font-size: 0.95em;
-            vertical-align: middle;
+            cursor: pointer;
         }
 
         #main-content {
             flex-grow: 1;
             padding: 20px;
-            height: 100%;
+            height: 100vh;
             overflow-y: auto;
             box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
         }
 
         #main-content h1 {
             color: #2c3e50;
             border-bottom: 2px solid #3498db;
             padding-bottom: 10px;
-            margin-top: 0;
         }
 
-        #map-container {
+        .map-container {
             width: 100%;
-            height: 400px; /* Fixed height for the map */
-            min-height: 300px; /* Minimum height */
+            height: 400px; /* Adjust height as needed */
             margin-bottom: 20px;
             border: 1px solid #ddd;
-            flex-shrink: 0; /* Prevent map from shrinking too much */
         }
 
-        #map { /* This is where the Google Map will be rendered */
+        .map-container iframe {
             width: 100%;
             height: 100%;
-        }
-
-        .itinerary-content {
-            flex-grow: 1; /* Allow itinerary to take remaining space and scroll */
-            overflow-y: auto; /* Scroll only the itinerary part if needed */
+            border: 0;
         }
 
         .itinerary-day {
@@ -140,17 +122,16 @@
         @media (max-width: 768px) {
             body {
                 flex-direction: column;
-                overflow: auto; /* Allow body scroll on small screens */
             }
             #sidebar {
                 width: 100%;
-                height: auto; /* Auto height for sidebar */
-                max-height: 40vh; /* Limit sidebar height */
+                height: auto;
+                max-height: 50vh; /* Limit sidebar height on small screens */
             }
             #main-content {
-                height: auto; /* Auto height for main content */
+                height: auto;
             }
-            #map-container {
+            .map-container {
                 height: 300px;
             }
         }
@@ -161,219 +142,160 @@
     <div id="sidebar">
         <h2>Popular Tokyo Sites</h2>
         <ul id="site-checklist">
-            <!-- Added data-lat and data-lng attributes for coordinates -->
-            <li data-lat="35.71476" data-lng="139.79666" data-name="Senso-ji Temple"><input type="checkbox" id="site1"><label for="site1">Senso-ji Temple</label></li>
-            <li data-lat="35.71006" data-lng="139.8107" data-name="Tokyo Skytree"><input type="checkbox" id="site2"><label for="site2">Tokyo Skytree</label></li>
-            <li data-lat="35.7139" data-lng="139.7741" data-name="Ueno Park"><input type="checkbox" id="site3"><label for="site3">Ueno Park & Museums</label></li>
-            <li data-lat="35.6764" data-lng="139.6993" data-name="Meiji Jingu Shrine"><input type="checkbox" id="site4"><label for="site4">Meiji Jingu Shrine</label></li>
-            <li data-lat="35.6701" data-lng="139.7023" data-name="Takeshita Street"><input type="checkbox" id="site5"><label for="site5">Harajuku (Takeshita Street)</label></li>
-            <li data-lat="35.6597" data-lng="139.7006" data-name="Shibuya Crossing"><input type="checkbox" id="site6"><label for="site6">Shibuya Crossing & Hachiko</label></li>
-            <li data-lat="35.6852" data-lng="139.7100" data-name="Shinjuku Gyoen"><input type="checkbox" id="site7"><label for="site7">Shinjuku Gyoen National Garden</label></li>
-            <li data-lat="35.6896" data-lng="139.6917" data-name="Tokyo Metro. Gov. Bldg."><input type="checkbox" id="site8"><label for="site8">Tokyo Metropolitan Gov. Building</label></li>
-            <li data-lat="35.6658" data-lng="139.7708" data-name="Tsukiji Outer Market"><input type="checkbox" id="site9"><label for="site9">Tsukiji Outer Market</label></li>
-            <li data-lat="35.6852" data-lng="139.7528" data-name="Imperial Palace East Garden"><input type="checkbox" id="site10"><label for="site10">Imperial Palace East Garden</label></li>
-            <li data-lat="35.6714" data-lng="139.7646" data-name="Ginza"><input type="checkbox" id="site11"><label for="site11">Ginza (Shopping)</label></li>
-            <li data-lat="35.6997" data-lng="139.7714" data-name="Akihabara"><input type="checkbox" id="site12"><label for="site12">Akihabara (Electric Town)</label></li>
-            <li data-lat="35.6477" data-lng="139.7908" data-name="teamLab Planets"><input type="checkbox" id="site13"><label for="site13">teamLab Planets (Book Ahead!)</label></li>
-            <li data-lat="35.7056" data-lng="139.5697" data-name="Ghibli Museum"><input type="checkbox" id="site14"><label for="site14">Ghibli Museum (Book WAY Ahead!)</label></li>
-            <li data-lat="35.6276" data-lng="139.7769" data-name="Odaiba"><input type="checkbox" id="site15"><label for="site15">Odaiba</label></li>
-            <li data-lat="35.7204" data-lng="139.7695" data-name="Yanaka Ginza"><input type="checkbox" id="site16"><label for="site16">Yanaka Ginza (Old Town Feel)</label></li>
-            <li data-lat="35.6638" data-lng="139.7159" data-name="Nezu Museum"><input type="checkbox" id="site17"><label for="site17">Nezu Museum</label></li>
-            <li data-lat="35.6932" data-lng="139.7008" data-name="Golden Gai"><input type="checkbox" id="site18"><label for="site18">Golden Gai (Shinjuku)</label></li>
+            <li><input type="checkbox" id="site1" name="site1"><label for="site1">Senso-ji Temple</label></li>
+            <li><input type="checkbox" id="site2" name="site2"><label for="site2">Tokyo Skytree</label></li>
+            <li><input type="checkbox" id="site3" name="site3"><label for="site3">Ueno Park & Museums</label></li>
+            <li><input type="checkbox" id="site4" name="site4"><label for="site4">Meiji Jingu Shrine</label></li>
+            <li><input type="checkbox" id="site5" name="site5"><label for="site5">Harajuku (Takeshita Street)</label></li>
+            <li><input type="checkbox" id="site6" name="site6"><label for="site6">Shibuya Crossing & Hachiko</label></li>
+            <li><input type="checkbox" id="site7" name="site7"><label for="site7">Shinjuku Gyoen National Garden</label></li>
+            <li><input type="checkbox" id="site8" name="site8"><label for="site8">Tokyo Metropolitan Gov. Building (View)</label></li>
+            <li><input type="checkbox" id="site9" name="site9"><label for="site9">Tsukiji Outer Market</label></li>
+            <li><input type="checkbox" id="site10" name="site10"><label for="site10">Imperial Palace East Garden</label></li>
+            <li><input type="checkbox" id="site11" name="site11"><label for="site11">Ginza (Shopping)</label></li>
+            <li><input type="checkbox" id="site12" name="site12"><label for="site12">Akihabara (Electric Town)</label></li>
+            <li><input type="checkbox" id="site13" name="site13"><label for="site13">teamLab Planets/Borderless (Book Ahead!)</label></li>
+            <li><input type="checkbox" id="site14" name="site14"><label for="site14">Ghibli Museum (Book WAY Ahead!)</label></li>
+            <li><input type="checkbox" id="site15" name="site15"><label for="site15">Odaiba</label></li>
+            <li><input type="checkbox" id="site16" name="site16"><label for="site16">Yanaka Ginza (Old Town Feel)</label></li>
+            <li><input type="checkbox" id="site17" name="site17"><label for="site17">Nezu Museum</label></li>
+             <li><input type="checkbox" id="site18" name="site18"><label for="site18">Golden Gai / Omoide Yokocho (Shinjuku)</label></li>
         </ul>
     </div>
 
     <div id="main-content">
         <h1>My Optimized 3-Day Tokyo Itinerary</h1>
 
-        <div id="map-container">
-            <div id="map"></div> <!-- Map will be rendered here by JS -->
+        <div class="map-container">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d414896.0392900597!2d139.5710399960124!3d35.66816240092537!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x605d1b87f02e57e7%3A0x2e01618b22571b89!2sTokyo%2C%20Japan!5e0!3m2!1sen!2sus!4v1678888888888!5m2!1sen!2sus" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
         </div>
 
-        <div class="itinerary-content">
-            <div class="tips">
-                <p><strong>General Tips for Tokyo:</strong></p>
-                <ul>
-                    <li>Get a Suica or Pasmo IC card for easy travel on trains and buses.</li>
-                    <li>Pocket Wi-Fi or a local SIM card is highly recommended for navigation.</li>
-                    <li>Wear comfortable shoes – you'll be doing a LOT of walking!</li>
-                    <li>Most places accept credit cards, but carry some cash for smaller shops and temples.</li>
-                    <li>Learn a few basic Japanese phrases (hello, thank you, excuse me).</li>
-                    <li>Check opening hours and book tickets for popular attractions (like Skytree, teamLab, Ghibli Museum) in advance.</li>
-                </ul>
-            </div>
+        <div class="tips">
+            <p><strong>General Tips for Tokyo:</strong></p>
+            <ul>
+                <li>Get a Suica or Pasmo IC card for easy travel on trains and buses.</li>
+                <li>Pocket Wi-Fi or a local SIM card is highly recommended for navigation.</li>
+                <li>Wear comfortable shoes – you'll be doing a LOT of walking!</li>
+                <li>Most places accept credit cards, but carry some cash for smaller shops and temples.</li>
+                <li>Learn a few basic Japanese phrases (hello, thank you, excuse me).</li>
+                <li>Check opening hours and book tickets for popular attractions (like Skytree, teamLab, Ghibli Museum) in advance.</li>
+            </ul>
+        </div>
 
-            <div class="itinerary-day">
-                <h2>Day 1: Tradition, Culture & Sky-High Views (East Tokyo)</h2>
-                <p>Focus on Asakusa, Ueno, and Sumida areas.</p>
-                
-                <h3>Morning (Asakusa):</h3>
-                <ul>
-                    <li><strong>Senso-ji Temple:</strong> Tokyo's oldest temple. Explore Nakamise-dori street leading to it, filled with traditional snacks and souvenirs.</li>
-                    <li><strong>Kaminarimon (Thunder Gate):</strong> Iconic entrance to Senso-ji.</li>
-                </ul>
+        <div class="itinerary-day">
+            <h2>Day 1: Tradition, Culture & Sky-High Views (East Tokyo)</h2>
+            <p>Focus on Asakusa, Ueno, and Sumida areas.</p>
+            
+            <h3>Morning (Asakusa):</h3>
+            <ul>
+                <li><strong>Senso-ji Temple:</strong> Tokyo's oldest temple. Explore Nakamise-dori street leading to it, filled with traditional snacks and souvenirs.</li>
+                <li><strong>Kaminarimon (Thunder Gate):</strong> Iconic entrance to Senso-ji.</li>
+            </ul>
 
-                <h3>Lunch:</h3>
-                <ul>
-                    <li>Try local specialties around Asakusa like unagi (eel), tempura, or monjayaki.</li>
-                </ul>
+            <h3>Lunch:</h3>
+            <ul>
+                <li>Try local specialties around Asakusa like unagi (eel), tempura, or monjayaki.</li>
+            </ul>
 
-                <h3>Afternoon (Ueno & Sumida):</h3>
-                <ul>
-                    <li><strong>Ueno Park:</strong> A large public park housing several museums (Tokyo National Museum, National Science Museum), Ueno Zoo, and shrines like Kaneiji Temple or Toshogu Shrine. Choose one or two based on interest.</li>
-                    <li><strong>Optional:</strong> Ameya-Yokocho Market (Ameyoko) near Ueno Station for bustling market stalls.</li>
-                    <li><strong>Tokyo Skytree:</strong> Head to the Skytree for panoramic city views (book tickets in advance to save time). Explore Solamachi mall at its base.</li>
-                </ul>
-                
-                <h3>Evening:</h3>
-                <ul>
-                    <li>Dinner around Skytree or back in Asakusa. Consider a Sumida River cruise for a different perspective.</li>
-                </ul>
-            </div>
+            <h3>Afternoon (Ueno & Sumida):</h3>
+            <ul>
+                <li><strong>Ueno Park:</strong> A large public park housing several museums (Tokyo National Museum, National Science Museum), Ueno Zoo, and shrines like Kaneiji Temple or Toshogu Shrine. Choose one or two based on interest.</li>
+                <li><strong>Optional:</strong> Ameya-Yokocho Market (Ameyoko) near Ueno Station for bustling market stalls.</li>
+                <li><strong>Tokyo Skytree:</strong> Head to the Skytree for panoramic city views (book tickets in advance to save time). Explore Solamachi mall at its base.</li>
+            </ul>
+            
+            <h3>Evening:</h3>
+            <ul>
+                <li>Dinner around Skytree or back in Asakusa. Consider a Sumida River cruise for a different perspective.</li>
+            </ul>
+        </div>
 
-            <div class="itinerary-day">
-                <h2>Day 2: Youth Culture, Imperial Serenity & Shinjuku Buzz (West & Central Tokyo)</h2>
-                <p>Explore Harajuku, Shibuya, and Shinjuku.</p>
+        <div class="itinerary-day">
+            <h2>Day 2: Youth Culture, Imperial Serenity & Shinjuku Buzz (West & Central Tokyo)</h2>
+            <p>Explore Harajuku, Shibuya, and Shinjuku.</p>
 
-                <h3>Morning (Harajuku & Meiji):</h3>
-                <ul>
-                    <li><strong>Meiji Jingu Shrine:</strong> A peaceful oasis dedicated to Emperor Meiji and Empress Shoken. Walk through the serene forest path.</li>
-                    <li><strong>Harajuku:</strong> Experience youth fashion on Takeshita Street (try unique snacks like crepes). Explore Omotesando for upscale boutiques if time permits.</li>
-                    <li><strong>Optional:</strong> Nezu Museum (beautiful garden and pre-modern Japanese art) if you enjoy quieter cultural spots.</li>
-                </ul>
+            <h3>Morning (Harajuku & Meiji):</h3>
+            <ul>
+                <li><strong>Meiji Jingu Shrine:</strong> A peaceful oasis dedicated to Emperor Meiji and Empress Shoken. Walk through the serene forest path.</li>
+                <li><strong>Harajuku:</strong> Experience youth fashion on Takeshita Street (try unique snacks like crepes). Explore Omotesando for upscale boutiques if time permits.</li>
+                <li><strong>Optional:</strong> Nezu Museum (beautiful garden and pre-modern Japanese art) if you enjoy quieter cultural spots.</li>
+            </ul>
 
-                <h3>Lunch:</h3>
-                <ul>
-                    <li>Grab quirky street food in Harajuku or find a trendy cafe.</li>
-                </ul>
+            <h3>Lunch:</h3>
+            <ul>
+                <li>Grab quirky street food in Harajuku or find a trendy cafe.</li>
+            </ul>
 
-                <h3>Afternoon (Shibuya & Shinjuku):</h3>
-                <ul>
-                    <li><strong>Shibuya Crossing:</strong> Experience the world's busiest pedestrian scramble. Don't forget to see the Hachiko statue.</li>
-                    <li><strong>Shibuya Sky (Optional):</strong> For amazing 360-degree views (book ahead!). Or explore Shibuya 109 for youth fashion.</li>
-                    <li><strong>Shinjuku Gyoen National Garden:</strong> A stunning, large park with diverse garden styles. A perfect escape from the city bustle.</li>
-                </ul>
+            <h3>Afternoon (Shibuya & Shinjuku):</h3>
+            <ul>
+                <li><strong>Shibuya Crossing:</strong> Experience the world's busiest pedestrian scramble. Don't forget to see the Hachiko statue.</li>
+                <li><strong>Shibuya Sky (Optional):</strong> For amazing 360-degree views (book ahead!). Or explore Shibuya 109 for youth fashion.</li>
+                <li><strong>Shinjuku Gyoen National Garden:</strong> A stunning, large park with diverse garden styles. A perfect escape from the city bustle.</li>
+            </ul>
 
-                <h3>Evening (Shinjuku):</h3>
-                <ul>
-                    <li><strong>Tokyo Metropolitan Government Building:</strong> Free panoramic views from its observation decks.</li>
-                    <li>Dinner in Shinjuku. Explore areas like:
-                        <ul>
-                            <li><strong>Omoide Yokocho ("Piss Alley"):</strong> Tiny yakitori restaurants.</li>
-                            <li><strong>Golden Gai:</strong> Atmospheric narrow lanes with tiny, unique bars.</li>
-                            <li>Or modern restaurants in the skyscrapers.</li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+            <h3>Evening (Shinjuku):</h3>
+            <ul>
+                <li><strong>Tokyo Metropolitan Government Building:</strong> Free panoramic views from its observation decks.</li>
+                <li>Dinner in Shinjuku. Explore areas like:
+                    <ul>
+                        <li><strong>Omoide Yokocho ("Piss Alley"):</strong> Tiny yakitori restaurants.</li>
+                        <li><strong>Golden Gai:</strong> Atmospheric narrow lanes with tiny, unique bars.</li>
+                        <li>Or modern restaurants in the skyscrapers.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
 
-            <div class="itinerary-day">
-                <h2>Day 3: Market Flavors, Imperial History & Electric Town (Central & East Tokyo)</h2>
-                <p>Tsukiji, Imperial Palace, and your choice of Ginza or Akihabara.</p>
+        <div class="itinerary-day">
+            <h2>Day 3: Market Flavors, Imperial History & Electric Town (Central & East Tokyo)</h2>
+            <p>Tsukiji, Imperial Palace, and your choice of Ginza or Akihabara.</p>
 
-                <h3>Morning (Tsukiji):</h3>
-                <ul>
-                    <li><strong>Tsukiji Outer Market:</strong> Indulge in a fresh seafood breakfast/brunch. Explore stalls selling produce, kitchenware, and snacks. (The inner market wholesale auction has moved to Toyosu).</li>
-                </ul>
-                
-                <h3>Late Morning/Early Afternoon (Imperial Palace Area):</h3>
-                <ul>
-                    <li><strong>Imperial Palace East Garden (Kokyo Higashi Gyoen):</strong> Explore the former site of Edo Castle, see remnants of old walls and guardhouses. (Closed on Mondays & Fridays).</li>
-                    <li><strong>Nijubashi Bridge:</strong> Take photos of the iconic double-arched bridge at the main entrance to the inner palace grounds (inner grounds generally not open to public).</li>
-                </ul>
+            <h3>Morning (Tsukiji):</h3>
+            <ul>
+                <li><strong>Tsukiji Outer Market:</strong> Indulge in a fresh seafood breakfast/brunch. Explore stalls selling produce, kitchenware, and snacks. (The inner market wholesale auction has moved to Toyosu).</li>
+            </ul>
+            
+            <h3>Late Morning/Early Afternoon (Imperial Palace Area):</h3>
+            <ul>
+                <li><strong>Imperial Palace East Garden (Kokyo Higashi Gyoen):</strong> Explore the former site of Edo Castle, see remnants of old walls and guardhouses. (Closed on Mondays & Fridays).</li>
+                <li><strong>Nijubashi Bridge:</strong> Take photos of the iconic double-arched bridge at the main entrance to the inner palace grounds (inner grounds generally not open to public).</li>
+            </ul>
 
-                <h3>Lunch:</h3>
-                <ul>
-                    <li>Near Imperial Palace or in Ginza/Tokyo Station area. Tokyo Station's "Ramen Street" or "Character Street" can be fun.</li>
-                </ul>
+            <h3>Lunch:</h3>
+            <ul>
+                <li>Near Imperial Palace or in Ginza/Tokyo Station area. Tokyo Station's "Ramen Street" or "Character Street" can be fun.</li>
+            </ul>
 
-                <h3>Afternoon (Choice A: Ginza):</h3>
-                <ul>
-                    <li><strong>Ginza:</strong> Explore Tokyo's upscale shopping district. Admire flagship stores, art galleries, and department stores (like Mitsukoshi or Ginza Wako). On weekend afternoons, Chuo Dori street becomes a pedestrian paradise.</li>
-                    <li><strong>Optional:</strong> Kabukiza Theatre (catch a single act of Kabuki if interested).</li>
-                </ul>
-                
-                <h3>Afternoon (Choice B: Akihabara):</h3>
-                <ul>
-                    <li><strong>Akihabara (Electric Town):</strong> Dive into the world of anime, manga, video games, and electronics. Explore multi-story arcades, themed cafes, and electronics superstores.</li>
-                </ul>
+            <h3>Afternoon (Choice A: Ginza):</h3>
+            <ul>
+                <li><strong>Ginza:</strong> Explore Tokyo's upscale shopping district. Admire flagship stores, art galleries, and department stores (like Mitsukoshi or Ginza Wako). On weekend afternoons, Chuo Dori street becomes a pedestrian paradise.</li>
+                <li><strong>Optional:</strong> Kabukiza Theatre (catch a single act of Kabuki if interested).</li>
+            </ul>
+            
+            <h3>Afternoon (Choice B: Akihabara):</h3>
+            <ul>
+                <li><strong>Akihabara (Electric Town):</strong> Dive into the world of anime, manga, video games, and electronics. Explore multi-story arcades, themed cafes, and electronics superstores.</li>
+            </ul>
 
-                <h3>Evening:</h3>
-                <ul>
-                    <li>Farewell dinner in Ginza (if you chose Ginza), Akihabara (themed cafe perhaps?), or another favorite neighborhood.</li>
-                    <li><strong>Optional:</strong> If you chose Akihabara and are into nightlife, explore nearby Kanda for izakayas.</li>
-                </ul>
-            </div>
-            <div class="tips">
-                <p><strong>Important Note on teamLab & Ghibli:</strong></p>
-                <ul>
-                    <li><strong>teamLab Planets (Toyosu) or teamLab Borderless (Azabudai Hills - reopened late 2023/early 2024):</strong> These immersive digital art museums are incredibly popular. Book tickets WELL in advance (weeks, sometimes months). They can take up a significant portion of a morning or afternoon. You could fit one into Day 3 (e.g., morning, then adjust other plans) or swap out an afternoon activity on another day.</li>
-                    <li><strong>Ghibli Museum (Mitaka):</strong> Tickets are notoriously hard to get and must be purchased months in advance, usually released on the 10th of each month for the following month. If you manage to get tickets, it will require a half-day trip to Mitaka (west of Shinjuku).</li>
-                </ul>
-            </div>
+            <h3>Evening:</h3>
+            <ul>
+                <li>Farewell dinner in Ginza (if you chose Ginza), Akihabara (themed cafe perhaps?), or another favorite neighborhood.</li>
+                <li><strong>Optional:</strong> If you chose Akihabara and are into nightlife, explore nearby Kanda for izakayas.</li>
+            </ul>
+        </div>
+         <div class="tips">
+            <p><strong>Important Note on teamLab & Ghibli:</strong></p>
+            <ul>
+                <li><strong>teamLab Planets (Toyosu) or teamLab Borderless (Azabudai Hills - reopened late 2023/early 2024):</strong> These immersive digital art museums are incredibly popular. Book tickets WELL in advance (weeks, sometimes months). They can take up a significant portion of a morning or afternoon. You could fit one into Day 3 (e.g., morning, then adjust other plans) or swap out an afternoon activity on another day.</li>
+                <li><strong>Ghibli Museum (Mitaka):</strong> Tickets are notoriously hard to get and must be purchased months in advance, usually released on the 10th of each month for the following month. If you manage to get tickets, it will require a half-day trip to Mitaka (west of Shinjuku).</li>
+            </ul>
         </div>
     </div>
-
-    <script>
-        let map;
-        let currentMarker;
-        let infoWindow;
-
-        function initMap() {
-            const tokyoCoords = { lat: 35.6895, lng: 139.6917 }; // General Tokyo center
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 11, // Zoom out a bit to see more of Tokyo
-                center: tokyoCoords,
-            });
-
-            infoWindow = new google.maps.InfoWindow();
-
-            const siteListItems = document.querySelectorAll("#site-checklist li");
-
-            siteListItems.forEach(item => {
-                item.addEventListener("mouseover", () => {
-                    const lat = parseFloat(item.dataset.lat);
-                    const lng = parseFloat(item.dataset.lng);
-                    const name = item.dataset.name || item.querySelector('label').textContent;
-
-                    if (lat && lng) {
-                        if (currentMarker) {
-                            currentMarker.setMap(null); // Remove previous marker
-                        }
-                        currentMarker = new google.maps.Marker({
-                            position: { lat, lng },
-                            map: map,
-                            title: name,
-                            animation: google.maps.Animation.DROP, // Optional: add drop animation
-                        });
-                        map.panTo({ lat, lng }); // Pan map to the marker
-                        // map.setZoom(14); // Optionally zoom in a bit
-
-                        infoWindow.setContent(name);
-                        infoWindow.open(map, currentMarker);
-                    }
-                });
-
-                item.addEventListener("mouseout", () => {
-                    if (currentMarker) {
-                        // Optional: Decide if you want to remove marker on mouseout or keep it
-                        // currentMarker.setMap(null);
-                        // currentMarker = null;
-                        infoWindow.close();
-                    }
-                });
-            });
-        }
-    </script>
-    <!-- 
-        IMPORTANT: Replace YOUR_GOOGLE_MAPS_API_KEY with your actual API key.
-        The "defer" attribute ensures the script is executed after the HTML is parsed.
-        The "async" attribute allows the script to load in parallel.
-        The "callback=initMap" part tells the API to call your initMap function once it's loaded.
-    -->
-    <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeSN_RH2CLz5lgiw-A3isBl9nTP3u2Ol8&callback=initMap">
-    </script>
 
 </body>
 </html>
